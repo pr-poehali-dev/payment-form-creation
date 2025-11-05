@@ -106,17 +106,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-3 sm:p-4 md:p-6">
       <div className="w-full max-w-2xl">
-        <div className="absolute top-4 right-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/embed")}
-            className="gap-2"
-          >
-            <Icon name="Code" size={16} />
-            <span className="hidden sm:inline">Код для сайта</span>
-          </Button>
-        </div>
+
 
         <div className="text-center mb-6 sm:mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-primary rounded-full mb-3 sm:mb-4">
