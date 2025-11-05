@@ -8,7 +8,7 @@ import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
-type Step = "form" | "payment-method" | "card-payment" | "sbp-payment" | "success";
+type Step = "form" | "payment-method" | "card-payment" | "sbp-payment" | "processing" | "success";
 
 export default function Index() {
   const [step, setStep] = useState<Step>("form");
@@ -22,6 +22,7 @@ export default function Index() {
   const [timeLeft, setTimeLeft] = useState(180);
   const [isChecking, setIsChecking] = useState(false);
   const [paymentId, setPaymentId] = useState("");
+  const [processingTime, setProcessingTime] = useState(60);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -46,6 +47,29 @@ export default function Index() {
       return () => clearInterval(timer);
     }
   }, [step, timeLeft, toast]);
+
+  useEffect(() => {
+    if (step === "processing" && processingTime > 0) {
+      const timer = setInterval(() => {
+        setProcessingTime((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            const generatedPaymentId = `PAY-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+            setPaymentId(generatedPaymentId);
+            setStep("success");
+            toast({
+              title: "Оплата успешна!",
+              description: "Ваш платёж обработан",
+            });
+            return 60;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [step, processingTime, toast]);
 
   const handleContractNumberChange = (value: string) => {
     const cleaned = value.replace(/[^\d]/g, '');
@@ -96,13 +120,8 @@ export default function Index() {
     setIsChecking(true);
     setTimeout(() => {
       setIsChecking(false);
-      const generatedPaymentId = `PAY-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-      setPaymentId(generatedPaymentId);
-      setStep("success");
-      toast({
-        title: "Оплата успешна!",
-        description: "Ваш платёж обработан",
-      });
+      setProcessingTime(60);
+      setStep("processing");
     }, 2000);
   };
 
@@ -471,6 +490,34 @@ ${receiptDate}
                     </>
                   )}
                 </Button>
+              </div>
+            </div>
+          )}
+
+          {step === "processing" && (
+            <div className="py-8 sm:py-12 text-center animate-fade-in">
+              <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-blue-100 rounded-full mb-6 animate-pulse">
+                <Icon name="Clock" className="text-primary" size={48} />
+              </div>
+              
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Платёж в обработке</h2>
+              <p className="text-sm sm:text-base text-gray-600 mb-8 px-4">
+                Пожалуйста, подождите. Мы проверяем ваш платёж
+              </p>
+
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 sm:p-8 mb-6 max-w-md mx-auto">
+                <div className="text-6xl sm:text-7xl font-bold text-primary mb-2">
+                  {Math.floor(processingTime / 60)}:{(processingTime % 60).toString().padStart(2, '0')}
+                </div>
+                <div className="text-sm text-gray-600">Осталось времени</div>
+              </div>
+
+              <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 p-4 rounded-lg max-w-md mx-auto">
+                <Icon name="Info" className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
+                <div className="text-sm text-left text-gray-700">
+                  <p className="font-semibold mb-1">Не закрывайте окно</p>
+                  <p>Проверка платежа может занять до 1 минуты. После завершения вы увидите чек.</p>
+                </div>
               </div>
             </div>
           )}
