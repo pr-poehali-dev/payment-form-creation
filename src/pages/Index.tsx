@@ -192,40 +192,51 @@ ${receiptDate}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="fullName">ФИО</Label>
+                <Label htmlFor="fullName">
+                  ФИО <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="fullName"
                   placeholder="Иванов Иван Иванович"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   className="h-11 sm:h-12 text-base"
+                  required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="birthDate">Дата рождения</Label>
+                <Label htmlFor="birthDate">
+                  Дата рождения <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="birthDate"
                   type="date"
                   value={formData.birthDate}
                   onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
                   className="h-11 sm:h-12 text-base"
+                  required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contractNumber">Номер договора</Label>
+                <Label htmlFor="contractNumber">
+                  Номер договора <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="contractNumber"
                   placeholder="1234567890"
                   value={formData.contractNumber}
                   onChange={(e) => setFormData({ ...formData, contractNumber: e.target.value })}
                   className="h-11 sm:h-12 text-base"
+                  required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="amount">Сумма оплаты (₽)</Label>
+                <Label htmlFor="amount">
+                  Сумма оплаты (₽) <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="amount"
                   type="number"
@@ -235,6 +246,7 @@ ${receiptDate}
                   className="h-11 sm:h-12 text-xl sm:text-2xl font-semibold"
                   min="0"
                   step="0.01"
+                  required
                 />
               </div>
 
