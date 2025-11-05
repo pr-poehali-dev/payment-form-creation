@@ -47,12 +47,26 @@ export default function Index() {
     }
   }, [step, timeLeft, toast]);
 
+  const handleContractNumberChange = (value: string) => {
+    const cleaned = value.replace(/[^\d]/g, '');
+    const limited = cleaned.slice(0, 8);
+    setFormData({ ...formData, contractNumber: limited });
+  };
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName || !formData.birthDate || !formData.contractNumber || !formData.amount) {
       toast({
         title: "Заполните все поля",
         description: "Все поля обязательны для заполнения",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (formData.contractNumber.length !== 8) {
+      toast({
+        title: "Некорректный номер договора",
+        description: "Номер должен содержать 8 цифр",
         variant: "destructive",
       });
       return;
@@ -139,7 +153,7 @@ ${receiptDate}
 
 Плательщик: ${formData.fullName}
 
-Номер договора: ${formData.contractNumber}
+Номер договора: МД-${formData.contractNumber}
 
 Способ оплаты: ${paymentMethod === "card" ? "Банковская карта" : "СБП"}
 
@@ -223,14 +237,21 @@ ${receiptDate}
                 <Label htmlFor="contractNumber">
                   Номер договора <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  id="contractNumber"
-                  placeholder="1234567890"
-                  value={formData.contractNumber}
-                  onChange={(e) => setFormData({ ...formData, contractNumber: e.target.value })}
-                  className="h-11 sm:h-12 text-base"
-                  required
-                />
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold text-base">
+                    МД-
+                  </div>
+                  <Input
+                    id="contractNumber"
+                    placeholder="00283799"
+                    value={formData.contractNumber}
+                    onChange={(e) => handleContractNumberChange(e.target.value)}
+                    className="h-11 sm:h-12 text-base pl-14"
+                    maxLength={8}
+                    required
+                  />
+                </div>
+                <p className="text-xs text-gray-500">Формат: МД-00283799 (8 цифр)</p>
               </div>
 
               <div className="space-y-2">
@@ -493,7 +514,7 @@ ${receiptDate}
                   </div>
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-gray-600">Номер договора:</span>
-                    <span className="font-semibold">{formData.contractNumber}</span>
+                    <span className="font-semibold">МД-{formData.contractNumber}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-gray-600">Способ оплаты:</span>
