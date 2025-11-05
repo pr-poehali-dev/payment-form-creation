@@ -501,28 +501,17 @@ ${receiptDate}
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Button
-                  onClick={downloadReceipt}
-                  variant="outline"
-                  className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base"
-                >
-                  <Icon name="Download" className="mr-2" size={20} />
-                  Скачать чек
-                </Button>
-                
-                <Button
-                  onClick={() => {
-                    setStep("form");
-                    setFormData({ fullName: "", birthDate: "", contractNumber: "", amount: "" });
-                    setPaymentId("");
-                    setTimeLeft(180);
-                  }}
-                  className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base"
-                >
-                  Новый платёж
-                </Button>
-              </div>
+              <Button
+                onClick={() => {
+                  setStep("form");
+                  setFormData({ fullName: "", birthDate: "", contractNumber: "", amount: "" });
+                  setPaymentId("");
+                  setTimeLeft(180);
+                }}
+                className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base"
+              >
+                Новый платёж
+              </Button>
             </div>
           )}
         </Card>
