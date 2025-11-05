@@ -15,6 +15,7 @@ export default function Index() {
     fullName: "",
     birthDate: "",
     contractNumber: "",
+    amount: "",
   });
   const [paymentMethod, setPaymentMethod] = useState<"card" | "sbp">("card");
   const [timeLeft, setTimeLeft] = useState(180);
@@ -45,10 +46,19 @@ export default function Index() {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.birthDate || !formData.contractNumber) {
+    if (!formData.fullName || !formData.birthDate || !formData.contractNumber || !formData.amount) {
       toast({
         title: "Заполните все поля",
         description: "Все поля обязательны для заполнения",
+        variant: "destructive",
+      });
+      return;
+    }
+    const amountNum = parseFloat(formData.amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      toast({
+        title: "Некорректная сумма",
+        description: "Введите положительное число",
         variant: "destructive",
       });
       return;
@@ -143,6 +153,20 @@ export default function Index() {
                 />
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="amount">Сумма оплаты (₽)</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  placeholder="1000"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  className="h-12 text-2xl font-semibold"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+
               <Button type="submit" className="w-full h-12 text-base font-semibold">
                 Продолжить
                 <Icon name="ArrowRight" className="ml-2" size={20} />
@@ -209,11 +233,11 @@ export default function Index() {
               </div>
 
               <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 rounded-xl text-white">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-2">
                   <span className="text-sm opacity-80">Номер карты для перевода</span>
                   <Icon name="Lock" size={20} />
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <span className="text-2xl font-mono tracking-wider">2200 9802 0524 3667</span>
                   <Button
                     variant="ghost"
@@ -223,6 +247,12 @@ export default function Index() {
                   >
                     <Icon name="Copy" size={20} />
                   </Button>
+                </div>
+                <div className="mt-4 pt-4 border-t border-white/20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm opacity-80">Сумма к оплате:</span>
+                    <span className="text-3xl font-bold">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
+                  </div>
                 </div>
               </div>
 
@@ -276,14 +306,14 @@ export default function Index() {
               </div>
 
               <div className="bg-gradient-to-r from-green-600 to-emerald-700 p-6 rounded-xl text-white">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-2">
                   <div>
                     <div className="text-sm opacity-80">Получатель</div>
                     <div className="font-semibold">Фора Банк СПБ</div>
                   </div>
                   <Icon name="Lock" size={20} />
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <span className="text-2xl font-mono">+7 958 684 12 76</span>
                   <Button
                     variant="ghost"
@@ -293,6 +323,12 @@ export default function Index() {
                   >
                     <Icon name="Copy" size={20} />
                   </Button>
+                </div>
+                <div className="mt-4 pt-4 border-t border-white/20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm opacity-80">Сумма к оплате:</span>
+                    <span className="text-3xl font-bold">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
+                  </div>
                 </div>
               </div>
 
@@ -354,6 +390,10 @@ export default function Index() {
                     <span className="font-semibold">{formData.contractNumber}</span>
                   </div>
                   <div className="flex justify-between">
+                    <span className="text-gray-600">Сумма:</span>
+                    <span className="font-semibold text-xl">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-gray-600">Способ оплаты:</span>
                     <span className="font-semibold">{paymentMethod === "card" ? "Банковская карта" : "СБП"}</span>
                   </div>
@@ -363,7 +403,7 @@ export default function Index() {
               <Button
                 onClick={() => {
                   setStep("form");
-                  setFormData({ fullName: "", birthDate: "", contractNumber: "" });
+                  setFormData({ fullName: "", birthDate: "", contractNumber: "", amount: "" });
                   setTimeLeft(180);
                 }}
                 className="w-full h-12 font-semibold"
