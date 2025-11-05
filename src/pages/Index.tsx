@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 type Step = "form" | "payment-method" | "card-payment" | "sbp-payment" | "success";
 
@@ -21,6 +22,7 @@ export default function Index() {
   const [timeLeft, setTimeLeft] = useState(180);
   const [isChecking, setIsChecking] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if ((step === "card-payment" || step === "sbp-payment") && timeLeft > 0) {
@@ -102,22 +104,34 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-3 sm:p-4 md:p-6">
       <div className="w-full max-w-2xl">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-            <Icon name="Shield" className="text-white" size={32} />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Защищённая оплата</h1>
-          <p className="text-gray-600">Ваши данные надёжно защищены</p>
+        <div className="absolute top-4 right-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/embed")}
+            className="gap-2"
+          >
+            <Icon name="Code" size={16} />
+            <span className="hidden sm:inline">Код для сайта</span>
+          </Button>
         </div>
 
-        <Card className="p-8 shadow-2xl">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-primary rounded-full mb-3 sm:mb-4">
+            <Icon name="Shield" className="text-white" size={24} />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 px-4">Защищённая оплата</h1>
+          <p className="text-sm sm:text-base text-gray-600">Ваши данные надёжно защищены</p>
+        </div>
+
+        <Card className="p-4 sm:p-6 md:p-8 shadow-2xl">
           {step === "form" && (
-            <form onSubmit={handleFormSubmit} className="space-y-6 animate-fade-in">
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b">
-                <Icon name="User" className="text-primary" size={24} />
-                <h2 className="text-2xl font-semibold">Данные плательщика</h2>
+            <form onSubmit={handleFormSubmit} className="space-y-4 sm:space-y-6 animate-fade-in">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b">
+                <Icon name="User" className="text-primary" size={20} />
+                <h2 className="text-xl sm:text-2xl font-semibold">Данные плательщика</h2>
               </div>
 
               <div className="space-y-2">
@@ -127,7 +141,7 @@ export default function Index() {
                   placeholder="Иванов Иван Иванович"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="h-12"
+                  className="h-11 sm:h-12 text-base"
                 />
               </div>
 
@@ -138,7 +152,7 @@ export default function Index() {
                   type="date"
                   value={formData.birthDate}
                   onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                  className="h-12"
+                  className="h-11 sm:h-12 text-base"
                 />
               </div>
 
@@ -149,7 +163,7 @@ export default function Index() {
                   placeholder="1234567890"
                   value={formData.contractNumber}
                   onChange={(e) => setFormData({ ...formData, contractNumber: e.target.value })}
-                  className="h-12"
+                  className="h-11 sm:h-12 text-base"
                 />
               </div>
 
@@ -161,13 +175,13 @@ export default function Index() {
                   placeholder="1000"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="h-12 text-2xl font-semibold"
+                  className="h-11 sm:h-12 text-xl sm:text-2xl font-semibold"
                   min="0"
                   step="0.01"
                 />
               </div>
 
-              <Button type="submit" className="w-full h-12 text-base font-semibold">
+              <Button type="submit" className="w-full h-11 sm:h-12 text-base font-semibold">
                 Продолжить
                 <Icon name="ArrowRight" className="ml-2" size={20} />
               </Button>
@@ -175,70 +189,70 @@ export default function Index() {
           )}
 
           {step === "payment-method" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b">
-                <Icon name="CreditCard" className="text-primary" size={24} />
-                <h2 className="text-2xl font-semibold">Способ оплаты</h2>
+            <div className="space-y-4 sm:space-y-6 animate-fade-in">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b">
+                <Icon name="CreditCard" className="text-primary" size={20} />
+                <h2 className="text-xl sm:text-2xl font-semibold">Способ оплаты</h2>
               </div>
 
               <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as "card" | "sbp")}>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-4 p-4 border-2 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
                     <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card" className="flex items-center gap-3 cursor-pointer flex-1">
-                      <Icon name="CreditCard" size={24} />
+                    <Label htmlFor="card" className="flex items-center gap-2 sm:gap-3 cursor-pointer flex-1">
+                      <Icon name="CreditCard" size={20} className="flex-shrink-0" />
                       <div>
-                        <div className="font-semibold">Оплата по номеру карты</div>
-                        <div className="text-sm text-gray-600">Перевод на банковскую карту</div>
+                        <div className="font-semibold text-sm sm:text-base">Оплата по номеру карты</div>
+                        <div className="text-xs sm:text-sm text-gray-600">Перевод на банковскую карту</div>
                       </div>
                     </Label>
                   </div>
 
                   <div className="flex items-center space-x-4 p-4 border-2 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
                     <RadioGroupItem value="sbp" id="sbp" />
-                    <Label htmlFor="sbp" className="flex items-center gap-3 cursor-pointer flex-1">
-                      <Icon name="Smartphone" size={24} />
+                    <Label htmlFor="sbp" className="flex items-center gap-2 sm:gap-3 cursor-pointer flex-1">
+                      <Icon name="Smartphone" size={20} className="flex-shrink-0" />
                       <div>
-                        <div className="font-semibold">Система быстрых платежей (СБП)</div>
-                        <div className="text-sm text-gray-600">Перевод по номеру телефона</div>
+                        <div className="font-semibold text-sm sm:text-base">Система быстрых платежей (СБП)</div>
+                        <div className="text-xs sm:text-sm text-gray-600">Перевод по номеру телефона</div>
                       </div>
                     </Label>
                   </div>
                 </div>
               </RadioGroup>
 
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setStep("form")} className="flex-1 h-12">
-                  <Icon name="ArrowLeft" className="mr-2" size={20} />
-                  Назад
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button variant="outline" onClick={() => setStep("form")} className="w-full sm:flex-1 h-11 sm:h-12">
+                  <Icon name="ArrowLeft" className="mr-2" size={18} />
+                  <span className="text-sm sm:text-base">Назад</span>
                 </Button>
-                <Button onClick={handlePaymentMethodSelect} className="flex-1 h-12 font-semibold">
-                  Выбрать
-                  <Icon name="ArrowRight" className="ml-2" size={20} />
+                <Button onClick={handlePaymentMethodSelect} className="w-full sm:flex-1 h-11 sm:h-12 font-semibold">
+                  <span className="text-sm sm:text-base">Выбрать</span>
+                  <Icon name="ArrowRight" className="ml-2" size={18} />
                 </Button>
               </div>
             </div>
           )}
 
           {step === "card-payment" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b">
-                <div className="flex items-center gap-3">
-                  <Icon name="CreditCard" className="text-primary" size={24} />
-                  <h2 className="text-2xl font-semibold">Оплата картой</h2>
+            <div className="space-y-4 sm:space-y-6 animate-fade-in">
+              <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b flex-wrap gap-2">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Icon name="CreditCard" className="text-primary" size={20} />
+                  <h2 className="text-lg sm:text-2xl font-semibold">Оплата картой</h2>
                 </div>
-                <div className={`text-2xl font-bold ${timeLeft < 60 ? "text-red-600" : "text-primary"}`}>
+                <div className={`text-xl sm:text-2xl font-bold ${timeLeft < 60 ? "text-red-600" : "text-primary"}`}>
                   {formatTime(timeLeft)}
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 rounded-xl text-white">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 sm:p-6 rounded-xl text-white">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm opacity-80">Номер карты для перевода</span>
                   <Icon name="Lock" size={20} />
                 </div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-2xl font-mono tracking-wider">2200 9802 0524 3667</span>
+                <div className="flex items-center justify-between mb-4 gap-2">
+                  <span className="text-base sm:text-xl md:text-2xl font-mono tracking-wider break-all">2200 9802 0524 3667</span>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -256,7 +270,7 @@ export default function Index() {
                 </div>
               </div>
 
-              <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="bg-blue-50 p-3 sm:p-4 rounded-lg">
                 <div className="flex gap-3">
                   <Icon name="Info" className="text-primary flex-shrink-0" size={20} />
                   <div className="text-sm text-gray-700">
@@ -294,18 +308,18 @@ export default function Index() {
           )}
 
           {step === "sbp-payment" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b">
-                <div className="flex items-center gap-3">
-                  <Icon name="Smartphone" className="text-primary" size={24} />
-                  <h2 className="text-2xl font-semibold">Оплата через СБП</h2>
+            <div className="space-y-4 sm:space-y-6 animate-fade-in">
+              <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b flex-wrap gap-2">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Icon name="Smartphone" className="text-primary" size={20} />
+                  <h2 className="text-lg sm:text-2xl font-semibold">Оплата через СБП</h2>
                 </div>
-                <div className={`text-2xl font-bold ${timeLeft < 60 ? "text-red-600" : "text-primary"}`}>
+                <div className={`text-xl sm:text-2xl font-bold ${timeLeft < 60 ? "text-red-600" : "text-primary"}`}>
                   {formatTime(timeLeft)}
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-600 to-emerald-700 p-6 rounded-xl text-white">
+              <div className="bg-gradient-to-r from-green-600 to-emerald-700 p-4 sm:p-6 rounded-xl text-white">
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <div className="text-sm opacity-80">Получатель</div>
@@ -313,8 +327,8 @@ export default function Index() {
                   </div>
                   <Icon name="Lock" size={20} />
                 </div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-2xl font-mono">+7 958 684 12 76</span>
+                <div className="flex items-center justify-between mb-4 gap-2">
+                  <span className="text-lg sm:text-2xl font-mono">+7 958 684 12 76</span>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -332,7 +346,7 @@ export default function Index() {
                 </div>
               </div>
 
-              <div className="bg-green-50 p-4 rounded-lg">
+              <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
                 <div className="flex gap-3">
                   <Icon name="Info" className="text-accent flex-shrink-0" size={20} />
                   <div className="text-sm text-gray-700">
@@ -372,15 +386,15 @@ export default function Index() {
           )}
 
           {step === "success" && (
-            <div className="text-center py-8 animate-fade-in">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6 animate-scale-in">
-                <Icon name="CheckCircle" className="text-green-600" size={48} />
+            <div className="text-center py-6 sm:py-8 animate-fade-in">
+              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full mb-4 sm:mb-6 animate-scale-in">
+                <Icon name="CheckCircle" className="text-green-600" size={40} />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Оплата успешна!</h2>
-              <p className="text-gray-600 mb-8">Ваш платёж обработан. Спасибо!</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 px-4">Оплата успешна!</h2>
+              <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">Ваш платёж обработан. Спасибо!</p>
 
-              <div className="bg-green-50 p-6 rounded-lg mb-6">
-                <div className="space-y-3 text-left">
+              <div className="bg-green-50 p-4 sm:p-6 rounded-lg mb-4 sm:mb-6">
+                <div className="space-y-2 sm:space-y-3 text-left text-sm sm:text-base">
                   <div className="flex justify-between">
                     <span className="text-gray-600">ФИО:</span>
                     <span className="font-semibold">{formData.fullName}</span>
@@ -391,7 +405,7 @@ export default function Index() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Сумма:</span>
-                    <span className="font-semibold text-xl">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
+                    <span className="font-semibold text-lg sm:text-xl">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Способ оплаты:</span>
@@ -406,7 +420,7 @@ export default function Index() {
                   setFormData({ fullName: "", birthDate: "", contractNumber: "", amount: "" });
                   setTimeLeft(180);
                 }}
-                className="w-full h-12 font-semibold"
+                className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base"
               >
                 Новый платёж
               </Button>
@@ -414,7 +428,7 @@ export default function Index() {
           )}
         </Card>
 
-        <div className="text-center mt-6 flex items-center justify-center gap-2 text-sm text-gray-600">
+        <div className="text-center mt-4 sm:mt-6 flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-600">
           <Icon name="Lock" size={16} />
           <span>Защищённое соединение SSL/TLS</span>
         </div>
