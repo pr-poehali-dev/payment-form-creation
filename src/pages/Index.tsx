@@ -21,6 +21,7 @@ export default function Index() {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "sbp">("card");
   const [timeLeft, setTimeLeft] = useState(180);
   const [isChecking, setIsChecking] = useState(false);
+  const [paymentId, setPaymentId] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -81,6 +82,8 @@ export default function Index() {
     setIsChecking(true);
     setTimeout(() => {
       setIsChecking(false);
+      const generatedPaymentId = `PAY-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      setPaymentId(generatedPaymentId);
       setStep("success");
       toast({
         title: "Оплата успешна!",
@@ -100,6 +103,64 @@ export default function Index() {
     toast({
       title: "Скопировано",
       description: "Данные скопированы в буфер обмена",
+    });
+  };
+
+  const downloadReceipt = () => {
+    const receiptDate = new Date().toLocaleString('ru-RU');
+    const receiptContent = `
+═══════════════════════════════════════════
+           ЧЕК ОПЛАТЫ
+═══════════════════════════════════════════
+
+Получатель:
+ООО "ЭКОРРА ПЛАТЕЖ"
+ИНН: 7743123456
+КПП: 774301001
+
+───────────────────────────────────────────
+
+Номер платежа: ${paymentId}
+Дата и время: ${receiptDate}
+
+───────────────────────────────────────────
+
+Плательщик:
+${formData.fullName}
+Дата рождения: ${new Date(formData.birthDate).toLocaleDateString('ru-RU')}
+Номер договора: ${formData.contractNumber}
+
+───────────────────────────────────────────
+
+Сумма платежа: ${parseFloat(formData.amount).toLocaleString('ru-RU')} ₽
+Способ оплаты: ${paymentMethod === "card" ? "Банковская карта" : "Система быстрых платежей (СБП)"}
+Статус: ОПЛАЧЕНО
+
+───────────────────────────────────────────
+
+Всего к оплате: ${parseFloat(formData.amount).toLocaleString('ru-RU')} ₽
+
+═══════════════════════════════════════════
+
+Спасибо за оплату!
+Этот чек является подтверждением оплаты.
+
+═══════════════════════════════════════════
+    `;
+
+    const blob = new Blob([receiptContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `чек_${paymentId}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Чек скачан",
+      description: "Файл сохранён в папку загрузок",
     });
   };
 
@@ -376,44 +437,86 @@ export default function Index() {
           )}
 
           {step === "success" && (
-            <div className="text-center py-6 sm:py-8 animate-fade-in">
-              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full mb-4 sm:mb-6 animate-scale-in">
-                <Icon name="CheckCircle" className="text-green-600" size={40} />
+            <div className="py-6 sm:py-8 animate-fade-in">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full mb-4 animate-scale-in">
+                  <Icon name="CheckCircle" className="text-green-600" size={40} />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 px-4">Оплата успешна!</h2>
+                <p className="text-sm sm:text-base text-gray-600 mb-4">Ваш платёж обработан. Спасибо!</p>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 px-4">Оплата успешна!</h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">Ваш платёж обработан. Спасибо!</p>
 
-              <div className="bg-green-50 p-4 sm:p-6 rounded-lg mb-4 sm:mb-6">
-                <div className="space-y-2 sm:space-y-3 text-left text-sm sm:text-base">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">ФИО:</span>
-                    <span className="font-semibold">{formData.fullName}</span>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 mb-6">
+                <div className="text-center mb-4">
+                  <div className="text-sm text-gray-500 mb-2">ООО "ЭКОРРА ПЛАТЕЖ"</div>
+                  <div className="text-xs text-gray-400">ИНН: 7743123456 | КПП: 774301001</div>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg mb-4">
+                  <div className="text-center mb-3">
+                    <div className="text-xs text-gray-500 mb-1">НОМЕР ПЛАТЕЖА</div>
+                    <div className="text-lg font-mono font-bold text-green-700">{paymentId}</div>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="text-xs text-center text-gray-500">
+                    {new Date().toLocaleString('ru-RU', { 
+                      day: '2-digit', 
+                      month: '2-digit', 
+                      year: 'numeric', 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="text-gray-600">Плательщик:</span>
+                    <span className="font-semibold text-right">{formData.fullName}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b">
                     <span className="text-gray-600">Номер договора:</span>
                     <span className="font-semibold">{formData.contractNumber}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Сумма:</span>
-                    <span className="font-semibold text-lg sm:text-xl">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
-                  </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between py-2 border-b">
                     <span className="text-gray-600">Способ оплаты:</span>
                     <span className="font-semibold">{paymentMethod === "card" ? "Банковская карта" : "СБП"}</span>
+                  </div>
+                  <div className="flex justify-between py-3 bg-gray-50 px-3 rounded-lg mt-3">
+                    <span className="text-gray-900 font-semibold">Сумма:</span>
+                    <span className="font-bold text-xl text-green-600">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-dashed">
+                  <div className="flex items-center justify-center gap-2 text-xs text-green-600">
+                    <Icon name="CheckCircle" size={16} />
+                    <span className="font-semibold">СТАТУС: ОПЛАЧЕНО</span>
                   </div>
                 </div>
               </div>
 
-              <Button
-                onClick={() => {
-                  setStep("form");
-                  setFormData({ fullName: "", birthDate: "", contractNumber: "", amount: "" });
-                  setTimeLeft(180);
-                }}
-                className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base"
-              >
-                Новый платёж
-              </Button>
+              <div className="space-y-3">
+                <Button
+                  onClick={downloadReceipt}
+                  variant="outline"
+                  className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base"
+                >
+                  <Icon name="Download" className="mr-2" size={20} />
+                  Скачать чек
+                </Button>
+                
+                <Button
+                  onClick={() => {
+                    setStep("form");
+                    setFormData({ fullName: "", birthDate: "", contractNumber: "", amount: "" });
+                    setPaymentId("");
+                    setTimeLeft(180);
+                  }}
+                  className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base"
+                >
+                  Новый платёж
+                </Button>
+              </div>
             </div>
           )}
         </Card>
