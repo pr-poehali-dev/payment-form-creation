@@ -116,9 +116,9 @@ export default function Index() {
 
   const handleCheckPayment = () => {
     setIsChecking(true);
+    setProcessingTime(60);
     setTimeout(() => {
       setIsChecking(false);
-      setProcessingTime(60);
       setStep("processing");
     }, 2000);
   };
