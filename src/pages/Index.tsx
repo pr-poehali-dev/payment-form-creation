@@ -213,7 +213,7 @@ ${receiptDate}
             <Icon name="Shield" className="text-white" size={24} />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-1 sm:mb-2 px-4">Защищённая оплата</h1>
-          <p className="text-sm sm:text-base text-white">Ваши данные надёжно защищены</p>
+          <p className="text-sm sm:text-base bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Ваши данные надёжно защищены</p>
         </div>
 
         <Card className="p-4 sm:p-6 md:p-8 shadow-2xl bg-white">
