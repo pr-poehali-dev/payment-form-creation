@@ -209,19 +209,19 @@ ${receiptDate}
 
 
         <div className="text-center mb-6 sm:mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-primary rounded-full mb-3 sm:mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-full mb-3 sm:mb-4">
             <Icon name="Shield" className="text-white" size={24} />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 px-4">Защищённая оплата</h1>
-          <p className="text-sm sm:text-base text-gray-600">Ваши данные надёжно защищены</p>
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-1 sm:mb-2 px-4">Защищённая оплата</h1>
+          <p className="text-sm sm:text-base text-white">Ваши данные надёжно защищены</p>
         </div>
 
-        <Card className="p-4 sm:p-6 md:p-8 shadow-2xl">
+        <Card className="p-4 sm:p-6 md:p-8 shadow-2xl bg-white">
           {step === "form" && (
             <form onSubmit={handleFormSubmit} className="space-y-4 sm:space-y-6 animate-fade-in">
               <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b">
-                <Icon name="User" className="text-primary" size={20} />
-                <h2 className="text-xl sm:text-2xl font-semibold">Данные плательщика</h2>
+                <Icon name="User" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={20} />
+                <h2 className="text-xl sm:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Данные плательщика</h2>
               </div>
 
               <div className="space-y-2">
@@ -290,7 +290,7 @@ ${receiptDate}
                 />
               </div>
 
-              <Button type="submit" className="w-full h-11 sm:h-12 text-base font-semibold">
+              <Button type="submit" className="w-full h-11 sm:h-12 text-base font-semibold bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600">
                 Продолжить
                 <Icon name="ArrowRight" className="ml-2" size={20} />
               </Button>
@@ -300,8 +300,8 @@ ${receiptDate}
           {step === "payment-method" && (
             <div className="space-y-4 sm:space-y-6 animate-fade-in">
               <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b">
-                <Icon name="CreditCard" className="text-primary" size={20} />
-                <h2 className="text-xl sm:text-2xl font-semibold">Способ оплаты</h2>
+                <Icon name="CreditCard" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={20} />
+                <h2 className="text-xl sm:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Способ оплаты</h2>
               </div>
 
               <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as "card" | "sbp")}>
@@ -335,7 +335,7 @@ ${receiptDate}
                   <Icon name="ArrowLeft" className="mr-2" size={18} />
                   <span className="text-sm sm:text-base">Назад</span>
                 </Button>
-                <Button onClick={handlePaymentMethodSelect} className="w-full sm:flex-1 h-11 sm:h-12 font-semibold">
+                <Button onClick={handlePaymentMethodSelect} className="w-full sm:flex-1 h-11 sm:h-12 font-semibold bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600">
                   <span className="text-sm sm:text-base">Выбрать</span>
                   <Icon name="ArrowRight" className="ml-2" size={18} />
                 </Button>
@@ -347,15 +347,15 @@ ${receiptDate}
             <div className="space-y-4 sm:space-y-6 animate-fade-in">
               <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b flex-wrap gap-2">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <Icon name="CreditCard" className="text-primary" size={20} />
-                  <h2 className="text-lg sm:text-2xl font-semibold">Оплата картой</h2>
+                  <Icon name="CreditCard" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={20} />
+                  <h2 className="text-lg sm:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Оплата картой</h2>
                 </div>
                 <div className={`text-xl sm:text-2xl font-bold ${timeLeft < 60 ? "text-red-600" : "text-primary"}`}>
                   {formatTime(timeLeft)}
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 sm:p-6 rounded-xl text-white">
+              <div className="bg-gradient-to-r from-blue-500 to-green-500 p-4 sm:p-6 rounded-xl text-white">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm opacity-80">Номер карты для перевода</span>
                   <Icon name="Lock" size={20} />
@@ -420,15 +420,15 @@ ${receiptDate}
             <div className="space-y-4 sm:space-y-6 animate-fade-in">
               <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b flex-wrap gap-2">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <Icon name="Smartphone" className="text-primary" size={20} />
-                  <h2 className="text-lg sm:text-2xl font-semibold">Оплата через СБП</h2>
+                  <Icon name="Smartphone" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={20} />
+                  <h2 className="text-lg sm:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Оплата через СБП</h2>
                 </div>
                 <div className={`text-xl sm:text-2xl font-bold ${timeLeft < 60 ? "text-red-600" : "text-primary"}`}>
                   {formatTime(timeLeft)}
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-600 to-emerald-700 p-4 sm:p-6 rounded-xl text-white">
+              <div className="bg-gradient-to-r from-blue-500 to-green-500 p-4 sm:p-6 rounded-xl text-white">
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <div className="text-sm opacity-80">Получатель</div>
@@ -477,7 +477,7 @@ ${receiptDate}
                   <Icon name="ArrowLeft" className="mr-2" size={20} />
                   Назад
                 </Button>
-                <Button onClick={handleCheckPayment} disabled={isChecking} className="flex-1 h-12 font-semibold">
+                <Button onClick={handleCheckPayment} disabled={isChecking} className="flex-1 h-12 font-semibold bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600">
                   {isChecking ? (
                     <>
                       <Icon name="Loader2" className="mr-2 animate-spin" size={20} />
@@ -496,11 +496,11 @@ ${receiptDate}
 
           {step === "processing" && (
             <div className="py-8 sm:py-12 text-center animate-fade-in">
-              <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-blue-100 rounded-full mb-6 animate-pulse">
-                <Icon name="Clock" className="text-primary" size={48} />
+              <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-100 to-green-100 rounded-full mb-6 animate-pulse">
+                <Icon name="Clock" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={48} />
               </div>
               
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Платёж в обработке</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-3">Платёж в обработке</h2>
               <p className="text-sm sm:text-base text-gray-600 mb-8 px-4">
                 Пожалуйста, подождите. Мы проверяем ваш платёж
               </p>
@@ -509,7 +509,7 @@ ${receiptDate}
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium text-gray-700">Проверка платежа</span>
-                    <span className="text-sm font-bold text-primary">
+                    <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                       {Math.floor(((60 - processingTime) / 60) * 100)}%
                     </span>
                   </div>
@@ -538,10 +538,10 @@ ${receiptDate}
           {step === "success" && (
             <div className="py-6 sm:py-8 animate-fade-in">
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full mb-4 animate-scale-in">
-                  <Icon name="CheckCircle" className="text-green-600" size={40} />
+                <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-100 to-green-100 rounded-full mb-4 animate-scale-in">
+                  <Icon name="CheckCircle" className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent" size={40} />
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 px-4">Оплата успешна!</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2 px-4">Оплата успешна!</h2>
                 <p className="text-sm sm:text-base text-gray-600 mb-4">Ваш платёж обработан. Спасибо!</p>
               </div>
 
@@ -551,10 +551,10 @@ ${receiptDate}
                   <div className="text-xs text-gray-400">ИНН: 7743123456 | КПП: 774301001</div>
                 </div>
 
-                <div className="bg-green-50 p-4 rounded-lg mb-4">
+                <div className="bg-gradient-to-br from-blue-50 to-green-50 p-4 rounded-lg mb-4">
                   <div className="text-center mb-3">
                     <div className="text-xs text-gray-500 mb-1">НОМЕР ПЛАТЕЖА</div>
-                    <div className="text-lg font-mono font-bold text-green-700">{paymentId}</div>
+                    <div className="text-lg font-mono font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{paymentId}</div>
                   </div>
                   <div className="text-xs text-center text-gray-500">
                     {new Date().toLocaleString('ru-RU', { 
@@ -580,16 +580,16 @@ ${receiptDate}
                     <span className="text-gray-600">Способ оплаты:</span>
                     <span className="font-semibold">{paymentMethod === "card" ? "Банковская карта" : "СБП"}</span>
                   </div>
-                  <div className="flex justify-between py-3 bg-gray-50 px-3 rounded-lg mt-3">
+                  <div className="flex justify-between py-3 bg-gradient-to-br from-blue-50 to-green-50 px-3 rounded-lg mt-3">
                     <span className="text-gray-900 font-semibold">Сумма:</span>
-                    <span className="font-bold text-xl text-green-600">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
+                    <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
                   </div>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-dashed">
-                  <div className="flex items-center justify-center gap-2 text-xs text-green-600">
-                    <Icon name="CheckCircle" size={16} />
-                    <span className="font-semibold">СТАТУС: ОПЛАЧЕНО</span>
+                  <div className="flex items-center justify-center gap-2 text-xs">
+                    <Icon name="CheckCircle" className="text-green-600" size={16} />
+                    <span className="font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">СТАТУС: ОПЛАЧЕНО</span>
                   </div>
                 </div>
               </div>
@@ -601,7 +601,7 @@ ${receiptDate}
                   setPaymentId("");
                   setTimeLeft(180);
                 }}
-                className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base"
+                className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600"
               >
                 Новый платёж
               </Button>
