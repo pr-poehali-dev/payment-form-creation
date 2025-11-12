@@ -204,7 +204,7 @@ ${receiptDate}
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-3 sm:p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-teal-400 to-green-500 flex items-center justify-center p-3 sm:p-4 md:p-6">
       <div className="w-full max-w-2xl">
 
 
