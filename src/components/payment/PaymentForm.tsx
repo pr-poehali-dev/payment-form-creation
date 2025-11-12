@@ -11,15 +11,15 @@ interface PaymentFormProps {
     amount: string;
   };
   onFormDataChange: (data: any) => void;
-  onSubmit: (e: React.FormEvent) => void;
   onContractNumberChange: (value: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
 }
 
 export default function PaymentForm({
   formData,
   onFormDataChange,
-  onSubmit,
   onContractNumberChange,
+  onSubmit,
 }: PaymentFormProps) {
   return (
     <form onSubmit={onSubmit} className="space-y-4 sm:space-y-6 animate-fade-in">

@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import PaymentForm from "@/components/payment/PaymentForm";
+import PaymentMethodSelector from "@/components/payment/PaymentMethodSelector";
+import PaymentExecutionScreen from "@/components/payment/PaymentExecutionScreen";
+import SuccessScreen from "@/components/payment/SuccessScreen";
 
 type Step = "form" | "payment-method" | "card-payment" | "sbp-payment" | "processing" | "success";
 
@@ -24,7 +23,6 @@ export default function Index() {
   const [paymentId, setPaymentId] = useState("");
   const [processingTime, setProcessingTime] = useState(60);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if ((step === "card-payment" || step === "sbp-payment") && timeLeft > 0) {
@@ -128,7 +126,7 @@ export default function Index() {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    return mins;
   };
 
   const copyToClipboard = (text: string) => {
@@ -139,75 +137,16 @@ export default function Index() {
     });
   };
 
-  const downloadReceipt = () => {
-    const receiptDate = new Date().toLocaleString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit', 
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-    const receiptContent = `
-================================================================
-
-                     ОПЛАТА УСПЕШНА!
-
-          Ваш платеж обработан. Спасибо!
-
-================================================================
-
-                 ООО "ЭКОРРА ПЛАТЕЖ"
-
-          ИНН: 7743123456 | КПП: 774301001
-
-================================================================
-
-                   НОМЕР ПЛАТЕЖА
-
-${paymentId}
-
-${receiptDate}
-
-================================================================
-
-Плательщик: ${formData.fullName}
-
-Номер договора: МД-${formData.contractNumber}
-
-Способ оплаты: ${paymentMethod === "card" ? "Банковская карта" : "СБП"}
-
-================================================================
-
-Сумма: ${parseFloat(formData.amount).toLocaleString('ru-RU')} руб.
-
-================================================================
-
-                 СТАТУС: ОПЛАЧЕНО
-
-================================================================
-    `;
-
-    const blob = new Blob([receiptContent], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `чек_${paymentId}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    toast({
-      title: "Чек скачан",
-      description: "Файл сохранён в папку загрузок",
-    });
+  const handleNewPayment = () => {
+    setStep("form");
+    setFormData({ fullName: "", birthDate: "", contractNumber: "", amount: "" });
+    setPaymentId("");
+    setTimeLeft(180);
   };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-3 sm:p-4 md:p-6">
       <div className="w-full max-w-2xl">
-
-
         <div className="text-center mb-6 sm:mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-full mb-3 sm:mb-4">
             <Icon name="Shield" className="text-white" size={24} />
@@ -218,400 +157,50 @@ ${receiptDate}
 
         <Card className="p-4 sm:p-6 md:p-8 shadow-2xl bg-white">
           {step === "form" && (
-            <form onSubmit={handleFormSubmit} className="space-y-4 sm:space-y-6 animate-fade-in">
-              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b">
-                <Icon name="User" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={20} />
-                <h2 className="text-xl sm:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Данные плательщика</h2>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="fullName">
-                  ФИО <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="fullName"
-                  placeholder="Иванов Иван Иванович"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="h-11 sm:h-12 text-base"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="birthDate">
-                  Дата рождения <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="birthDate"
-                  type="date"
-                  value={formData.birthDate}
-                  onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                  className="h-11 sm:h-12 text-base"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="contractNumber">
-                  Номер договора <span className="text-red-500">*</span>
-                </Label>
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold text-base">
-                    МД-
-                  </div>
-                  <Input
-                    id="contractNumber"
-                    placeholder="00283799"
-                    value={formData.contractNumber}
-                    onChange={(e) => handleContractNumberChange(e.target.value)}
-                    className="h-11 sm:h-12 text-base pl-14"
-                    maxLength={8}
-                    required
-                  />
-                </div>
-                <p className="text-xs text-gray-500">Формат: МД-00283799 (8 цифр)</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="amount">
-                  Сумма оплаты (₽) <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  placeholder="1000"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="h-11 sm:h-12 text-xl sm:text-2xl font-semibold"
-                  min="0"
-                  step="0.01"
-                  required
-                />
-              </div>
-
-              <Button type="submit" className="w-full h-11 sm:h-12 text-base font-semibold bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600">
-                Продолжить
-                <Icon name="ArrowRight" className="ml-2" size={20} />
-              </Button>
-            </form>
+            <PaymentForm
+              formData={formData}
+              onFormDataChange={setFormData}
+              onContractNumberChange={handleContractNumberChange}
+              onSubmit={handleFormSubmit}
+            />
           )}
 
           {step === "payment-method" && (
-            <div className="space-y-4 sm:space-y-6 animate-fade-in">
-              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b">
-                <Icon name="CreditCard" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={20} />
-                <h2 className="text-xl sm:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Способ оплаты</h2>
-              </div>
-
-              <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as "card" | "sbp")}>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4 p-4 border-2 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                    <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card" className="flex items-center gap-2 sm:gap-3 cursor-pointer flex-1">
-                      <Icon name="CreditCard" size={20} className="flex-shrink-0" />
-                      <div>
-                        <div className="font-semibold text-sm sm:text-base">Оплата по номеру карты</div>
-                        <div className="text-xs sm:text-sm text-gray-600">Перевод на банковскую карту</div>
-                      </div>
-                    </Label>
-                  </div>
-
-                  <div className="flex items-center space-x-4 p-4 border-2 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                    <RadioGroupItem value="sbp" id="sbp" />
-                    <Label htmlFor="sbp" className="flex items-center gap-2 sm:gap-3 cursor-pointer flex-1">
-                      <Icon name="Smartphone" size={20} className="flex-shrink-0" />
-                      <div>
-                        <div className="font-semibold text-sm sm:text-base">Система быстрых платежей (СБП)</div>
-                        <div className="text-xs sm:text-sm text-gray-600">Перевод по номеру телефона</div>
-                      </div>
-                    </Label>
-                  </div>
-                </div>
-              </RadioGroup>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button variant="outline" onClick={() => setStep("form")} className="w-full sm:flex-1 h-11 sm:h-12">
-                  <Icon name="ArrowLeft" className="mr-2" size={18} />
-                  <span className="text-sm sm:text-base">Назад</span>
-                </Button>
-                <Button onClick={handlePaymentMethodSelect} className="w-full sm:flex-1 h-11 sm:h-12 font-semibold bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600">
-                  <span className="text-sm sm:text-base">Выбрать</span>
-                  <Icon name="ArrowRight" className="ml-2" size={18} />
-                </Button>
-              </div>
-            </div>
+            <PaymentMethodSelector
+              paymentMethod={paymentMethod}
+              onPaymentMethodChange={setPaymentMethod}
+              onBack={() => setStep("form")}
+              onSelect={handlePaymentMethodSelect}
+            />
           )}
 
-          {step === "card-payment" && (
-            <div className="space-y-4 sm:space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b flex-wrap gap-2">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <Icon name="CreditCard" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={20} />
-                  <h2 className="text-lg sm:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Оплата картой</h2>
-                </div>
-                <div className={`text-xl sm:text-2xl font-bold ${timeLeft < 60 ? "text-red-600" : "text-primary"}`}>
-                  {formatTime(timeLeft)}
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-r from-blue-500 to-green-500 p-4 sm:p-6 rounded-xl text-white">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm opacity-80">Номер карты для перевода</span>
-                  <Icon name="Lock" size={20} />
-                </div>
-                <div className="flex items-center justify-between mb-4 gap-2">
-                  <span className="text-base sm:text-xl md:text-2xl font-mono tracking-wider break-all">2200 9802 0524 3667</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyToClipboard("2200980205243667")}
-                    className="text-white hover:bg-white/20"
-                  >
-                    <Icon name="Copy" size={20} />
-                  </Button>
-                </div>
-                <div className="mt-4 pt-4 border-t border-white/20">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm opacity-80">Сумма к оплате:</span>
-                    <span className="text-3xl font-bold">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-blue-50 p-3 sm:p-4 rounded-lg">
-                <div className="flex gap-3">
-                  <Icon name="Info" className="text-primary flex-shrink-0" size={20} />
-                  <div className="text-sm text-gray-700">
-                    <p className="font-semibold mb-1">Как оплатить:</p>
-                    <ol className="list-decimal list-inside space-y-1">
-                      <li>Скопируйте номер карты</li>
-                      <li>Откройте мобильное приложение вашего банка</li>
-                      <li>Выполните перевод на указанную карту</li>
-                      <li>Нажмите "Проверить оплату"</li>
-                    </ol>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setStep("payment-method")} className="flex-1 h-12">
-                  <Icon name="ArrowLeft" className="mr-2" size={20} />
-                  Назад
-                </Button>
-                <Button onClick={handleCheckPayment} disabled={isChecking} className="flex-1 h-12 font-semibold">
-                  {isChecking ? (
-                    <>
-                      <Icon name="Loader2" className="mr-2 animate-spin" size={20} />
-                      Проверка...
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="CheckCircle" className="mr-2" size={20} />
-                      Проверить оплату
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {step === "sbp-payment" && (
-            <div className="space-y-4 sm:space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b flex-wrap gap-2">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <Icon name="Smartphone" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={20} />
-                  <h2 className="text-lg sm:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Оплата через СБП</h2>
-                </div>
-                <div className={`text-xl sm:text-2xl font-bold ${timeLeft < 60 ? "text-red-600" : "text-primary"}`}>
-                  {formatTime(timeLeft)}
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-r from-blue-500 to-green-500 p-4 sm:p-6 rounded-xl text-white">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <div className="text-sm opacity-80">Получатель</div>
-                    <div className="font-semibold">Фора Банк СПБ</div>
-                  </div>
-                  <Icon name="Lock" size={20} />
-                </div>
-                <div className="flex items-center justify-between mb-4 gap-2">
-                  <span className="text-lg sm:text-2xl font-mono">+7 958 684 12 76</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyToClipboard("+79586841276")}
-                    className="text-white hover:bg-white/20"
-                  >
-                    <Icon name="Copy" size={20} />
-                  </Button>
-                </div>
-                <div className="mt-4 pt-4 border-t border-white/20">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm opacity-80">Сумма к оплате:</span>
-                    <span className="text-3xl font-bold">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
-                <div className="flex gap-3">
-                  <Icon name="Info" className="text-accent flex-shrink-0" size={20} />
-                  <div className="text-sm text-gray-700">
-                    <p className="font-semibold mb-1">Как оплатить:</p>
-                    <ol className="list-decimal list-inside space-y-1">
-                      <li>Скопируйте номер телефона</li>
-                      <li>Откройте приложение вашего банка</li>
-                      <li>Выберите "Переводы по СБП"</li>
-                      <li>Введите номер телефона и сумму</li>
-                      <li>Подтвердите перевод</li>
-                      <li>Нажмите "Проверить оплату"</li>
-                    </ol>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setStep("payment-method")} className="flex-1 h-12">
-                  <Icon name="ArrowLeft" className="mr-2" size={20} />
-                  Назад
-                </Button>
-                <Button onClick={handleCheckPayment} disabled={isChecking} className="flex-1 h-12 font-semibold bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600">
-                  {isChecking ? (
-                    <>
-                      <Icon name="Loader2" className="mr-2 animate-spin" size={20} />
-                      Проверка...
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="CheckCircle" className="mr-2" size={20} />
-                      Проверить оплату
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {step === "processing" && (
-            <div className="py-8 sm:py-12 text-center animate-fade-in">
-              <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-100 to-green-100 rounded-full mb-6 animate-pulse">
-                <Icon name="Clock" className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent" size={48} />
-              </div>
-              
-              <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-3">Платёж в обработке</h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-8 px-4">
-                Пожалуйста, подождите. Мы проверяем ваш платёж
-              </p>
-
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 sm:p-8 mb-6 max-w-md mx-auto">
-                <div className="mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-700">Проверка платежа</span>
-                    <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                      {Math.floor(((60 - processingTime) / 60) * 100)}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                    <div 
-                      className="bg-gradient-to-r from-blue-500 to-green-500 h-full rounded-full transition-all duration-1000 ease-linear"
-                      style={{ width: `${((60 - processingTime) / 60) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Осталось: {Math.floor(processingTime / 60)}:{(processingTime % 60).toString().padStart(2, '0')}
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 p-4 rounded-lg max-w-md mx-auto">
-                <Icon name="Info" className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
-                <div className="text-sm text-left text-gray-700">
-                  <p className="font-semibold mb-1">Не закрывайте окно</p>
-                  <p>Проверка платежа может занять до 1 минуты. После завершения вы увидите чек.</p>
-                </div>
-              </div>
-            </div>
+          {(step === "card-payment" || step === "sbp-payment" || step === "processing") && (
+            <PaymentExecutionScreen
+              step={step}
+              timeLeft={timeLeft}
+              processingTime={processingTime}
+              formData={formData}
+              isChecking={isChecking}
+              onBack={() => setStep("payment-method")}
+              onCheckPayment={handleCheckPayment}
+              onCopyToClipboard={copyToClipboard}
+              formatTime={formatTime}
+            />
           )}
 
           {step === "success" && (
-            <div className="py-6 sm:py-8 animate-fade-in">
-              <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-100 to-green-100 rounded-full mb-4 animate-scale-in">
-                  <Icon name="CheckCircle" className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent" size={40} />
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2 px-4">Оплата успешна!</h2>
-                <p className="text-sm sm:text-base text-gray-600 mb-4">Ваш платёж обработан. Спасибо!</p>
-              </div>
-
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 mb-6">
-                <div className="text-center mb-4">
-                  <div className="text-sm text-gray-500 mb-2">ООО "ЭКОРРА ПЛАТЕЖ"</div>
-                  <div className="text-xs text-gray-400">ИНН: 7743123456 | КПП: 774301001</div>
-                </div>
-
-                <div className="bg-gradient-to-br from-blue-50 to-green-50 p-4 rounded-lg mb-4">
-                  <div className="text-center mb-3">
-                    <div className="text-xs text-gray-500 mb-1">НОМЕР ПЛАТЕЖА</div>
-                    <div className="text-lg font-mono font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{paymentId}</div>
-                  </div>
-                  <div className="text-xs text-center text-gray-500">
-                    {new Date().toLocaleString('ru-RU', { 
-                      day: '2-digit', 
-                      month: '2-digit', 
-                      year: 'numeric', 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
-                  </div>
-                </div>
-
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Плательщик:</span>
-                    <span className="font-semibold text-right">{formData.fullName}</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Номер договора:</span>
-                    <span className="font-semibold">МД-{formData.contractNumber}</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Способ оплаты:</span>
-                    <span className="font-semibold">{paymentMethod === "card" ? "Банковская карта" : "СБП"}</span>
-                  </div>
-                  <div className="flex justify-between py-3 bg-gradient-to-br from-blue-50 to-green-50 px-3 rounded-lg mt-3">
-                    <span className="text-gray-900 font-semibold">Сумма:</span>
-                    <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{parseFloat(formData.amount).toLocaleString('ru-RU')} ₽</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-dashed">
-                  <div className="flex items-center justify-center gap-2 text-xs">
-                    <Icon name="CheckCircle" className="text-green-600" size={16} />
-                    <span className="font-semibold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">СТАТУС: ОПЛАЧЕНО</span>
-                  </div>
-                </div>
-              </div>
-
-              <Button
-                onClick={() => {
-                  setStep("form");
-                  setFormData({ fullName: "", birthDate: "", contractNumber: "", amount: "" });
-                  setPaymentId("");
-                  setTimeLeft(180);
-                }}
-                className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600"
-              >
-                Новый платёж
-              </Button>
-            </div>
+            <SuccessScreen
+              paymentId={paymentId}
+              formData={formData}
+              paymentMethod={paymentMethod}
+              onNewPayment={handleNewPayment}
+            />
           )}
         </Card>
 
         <div className="text-center mt-4 sm:mt-6 flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-600">
           <Icon name="Lock" size={16} />
-          <span>Защищённое соединение SSL/TLS</span>
+          <span>Защищено SSL-сертификатом</span>
         </div>
       </div>
     </div>
