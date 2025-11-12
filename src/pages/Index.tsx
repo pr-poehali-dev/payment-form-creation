@@ -506,10 +506,23 @@ ${receiptDate}
               </p>
 
               <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 sm:p-8 mb-6 max-w-md mx-auto">
-                <div className="text-6xl sm:text-7xl font-bold text-primary mb-2">
-                  {Math.floor(processingTime / 60)}:{(processingTime % 60).toString().padStart(2, '0')}
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-700">Проверка платежа</span>
+                    <span className="text-sm font-bold text-primary">
+                      {Math.floor(((60 - processingTime) / 60) * 100)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-blue-500 to-green-500 h-full rounded-full transition-all duration-1000 ease-linear"
+                      style={{ width: `${((60 - processingTime) / 60) * 100}%` }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-600">Осталось времени</div>
+                <div className="text-sm text-gray-600">
+                  Осталось: {Math.floor(processingTime / 60)}:{(processingTime % 60).toString().padStart(2, '0')}
+                </div>
               </div>
 
               <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 p-4 rounded-lg max-w-md mx-auto">
